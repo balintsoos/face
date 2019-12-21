@@ -1,11 +1,11 @@
 import * as faceapi from 'face-api.js';
 
-const loadModels = () =>
+const loadModels = folder =>
   Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri('/weights'),
-    faceapi.nets.faceLandmark68Net.loadFromUri('/weights'),
-    faceapi.nets.faceRecognitionNet.loadFromUri('/weights'),
-    faceapi.nets.faceExpressionNet.loadFromUri('/weights'),
+    faceapi.nets.tinyFaceDetector.loadFromUri(folder),
+    faceapi.nets.faceLandmark68Net.loadFromUri(folder),
+    faceapi.nets.faceRecognitionNet.loadFromUri(folder),
+    faceapi.nets.faceExpressionNet.loadFromUri(folder),
   ]);
 
 const getVideoDimensions = video => ({ width: video.width, height: video.height });
@@ -37,6 +37,7 @@ const clearCanvas = canvas => canvas.getContext('2d').clearRect(0, 0, canvas.wid
 const detectInterval = 100;
 const WIDTH = 1280;
 const HEIGHT = 720;
+const modelFolder = '/weights';
 const video = document.getElementById('video');
 
 video.addEventListener('play', () => {
@@ -48,7 +49,7 @@ video.addEventListener('play', () => {
   }, detectInterval);
 });
 
-loadModels().then(() => {
+loadModels(modelFolder).then(() => {
   navigator.mediaDevices
     .getUserMedia({
       video: {
