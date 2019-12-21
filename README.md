@@ -1,5 +1,5 @@
 # face
-Face expression detection with face-api.js
+Face expression detection with [face-api.js](https://github.com/justadudewhohacks/face-api.js/)
 
 ```
 $ nvm install
