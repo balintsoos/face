@@ -6,6 +6,7 @@ const loadModels = folder =>
     faceapi.nets.faceLandmark68Net.loadFromUri(folder),
     faceapi.nets.faceRecognitionNet.loadFromUri(folder),
     faceapi.nets.faceExpressionNet.loadFromUri(folder),
+    faceapi.nets.ageGenderNet.loadFromUri(folder),
   ]);
 
 const getVideoDimensions = video => ({ width: video.width, height: video.height });
@@ -21,7 +22,8 @@ const detect = async video => {
   const detections = await faceapi
     .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
     .withFaceLandmarks()
-    .withFaceExpressions();
+    .withFaceExpressions()
+    .withAgeAndGender();
   const resizedDetections = faceapi.resizeResults(detections, getVideoDimensions(video));
   return resizedDetections;
 };
@@ -30,6 +32,16 @@ const draw = (canvas, detections) => {
   faceapi.draw.drawDetections(canvas, detections);
   faceapi.draw.drawFaceLandmarks(canvas, detections);
   faceapi.draw.drawFaceExpressions(canvas, detections);
+  detections.forEach(detection => {
+    const { age, gender, genderProbability } = detection;
+    new faceapi.draw.DrawTextField(
+      [
+        `${faceapi.utils.round(age, 0)} years`,
+        `${gender} (${faceapi.utils.round(genderProbability)})`
+      ],
+      detection.detection.box.bottomRight,
+    ).draw(canvas);
+  });
 };
 
 const clearCanvas = canvas => canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
